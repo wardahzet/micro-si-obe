@@ -21,7 +21,7 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('syllabus_id');
             $table->longText('settings')->nullable()->charset('utf8mb4')->collation('utf8mb4_bin');
-            $table->foreign('course_id')->references('id')->on('courses');
+
         });
     }
 
