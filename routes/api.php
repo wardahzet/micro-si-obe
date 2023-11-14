@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CourseClassController;
+use App\Http\Controllers\JoinClassController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +16,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
+Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
