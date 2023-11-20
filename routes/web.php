@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseClassController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/courses/search-name/{courseName}', [CourseClassController::class, 'getClassesByCourseName'])->name('courses.search');
+Route::get('/courses/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
 
 Route::get('/', function () {
     return view('welcome');
