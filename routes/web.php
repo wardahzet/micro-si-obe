@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CourseClassController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\JoinClassController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,7 @@ Route::get('/courses/search-id/{courseId}', [CourseClassController::class, 'getC
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/home', function () {
+    return ('welcome');
+});
+
