@@ -25,6 +25,7 @@ Route::post('/classes', [CourseClassController::class, 'create']);
 Route::post('/joinClass', [JoinClassController::class,'store']);
 Route::get('/joinClass', [JoinClassController::class,'index']);
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
+
 Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
 Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
