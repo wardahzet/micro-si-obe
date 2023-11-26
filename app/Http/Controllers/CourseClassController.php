@@ -88,7 +88,7 @@ class CourseClassController extends Controller
     {
         //
         try {
-            $courses = CourseClass::where('course_id', $courseId)->get();
+            $courses = CourseClass::where('id', $courseId)->get();
             if ($courses->isEmpty()) {
                 return response()->json(['error' => 'Course tidak ditemukan'], 404);
             }
