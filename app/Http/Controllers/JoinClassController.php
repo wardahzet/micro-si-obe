@@ -64,24 +64,23 @@ class JoinClassController extends Controller
             'student_user_id' => 'required',
         ]);
 
-        // Check if course_class_id exists in the course table
+
         $courseExists = CourseClass::where('course_id', $request->course_class_id)->exists();
 
-        // If either the course or the student doesn't exist, return an error response
         if (!$courseExists) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid course or student ID provided',
-            ], 422); // 422 Unprocessable Entity
+            ], 422); 
         }
 
-        // Create JoinClass record
+  
         $joinClass = JoinClass::create([
             'course_class_id' => $request->course_class_id,
             'student_user_id' => $request->student_user_id,
         ]);
 
-        // Return success response
+
         return response()->json([
             'success' => true,
             'message' => 'Data berhasil diinputkan',
