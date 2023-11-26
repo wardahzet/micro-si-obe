@@ -15,8 +15,6 @@ use App\Http\Controllers\JoinClassController;
 |
 */
 
-Route::get('/courses/search-name/{courseName}', [CourseClassController::class, 'getClassesByCourseName'])->name('courses.search');
-Route::get('/courses/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
 
 Route::get('/', function () {
     return view('welcome');
