@@ -26,3 +26,4 @@ Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
 
 Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
+Route::get('/user', [JoinClassController::class,'getUsers']);
