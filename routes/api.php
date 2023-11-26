@@ -23,5 +23,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/joinClass', [JoinClassController::class,'store']);
 Route::get('/joinClass', [JoinClassController::class,'index']);
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
+
 Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);

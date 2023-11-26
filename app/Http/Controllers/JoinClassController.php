@@ -12,42 +12,53 @@ class JoinClassController extends Controller
         $joinClass = JoinClass::all();
 
         return response()->json([
-            'success'=> true,
-            'data'=>$joinClass
+            'success' => true,
+            'data' => $joinClass
         ]);
     }
 
     public function show(Request $request)
     {
         $courseClassId = $request->course_class_id;
-
-        // Menghitung jumlah mahasiswa dengan course_class_id yang sama
-        $studentCount = JoinClass::where('course_class_id', $courseClassId)->count();
-
-        // Mengambil data JoinClass dengan relasi CourseClass
-        $joinClass = JoinClass::with(['courseClass'])
+        $joinClasses = JoinClass::with(['courseClass'])
             ->where('course_class_id', $courseClassId)
-            ->first();
-
-        if (!$joinClass) {
+            ->get(); 
+        if ($joinClasses->isEmpty()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Data tidak ditemukan',
             ], 404);
         }
-
-        return response()->json([
+        $classInfo = null;
+        $studentsInfo = [];
+        foreach ($joinClasses as $joinClass) {
+            if ($classInfo === null) {
+                $classInfo = [
+                    'class' => $joinClass->course_class_id,
+                    'class_code' => $joinClass->courseClass->class_code,
+                    'class_name' => $joinClass->courseClass->name,
+                    'course_id' => $joinClass->courseClass->course_id,
+                ];
+            }
+            $studentsInfo[] = [
+                'student_user_id' => $joinClass->student_user_id,
+            ];
+        }
+        $classInfo['students'] = $studentsInfo;
+        $result = [
             'success' => true,
             'data' => [
-                'class' => $joinClass->course_class_id,
-                'class_code' => $joinClass->courseClass->class_code,
-                'class_name' => $joinClass->courseClass->name,
-                'course_id' => $joinClass->courseClass->course_id,
-                'student_count' => $studentCount,
+                'class' => $classInfo,
             ],
-        ]);
+        ];
+
+        return response()->json($result);
     }
-    
+
+
+
+
+
 
     public function store(Request $request)
     {
@@ -69,7 +80,7 @@ class JoinClassController extends Controller
             ]
         ]);
     }
-    
+
     //fungsi delete member class
     public function deleteMemberClass($idClass, $idMember)
     {
