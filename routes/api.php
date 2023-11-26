@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\CourseClassController;
+use App\Http\Controllers\JoinClassController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CourseClassController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/micro/classes', [CourseClassController::class, 'create']);
 Route::get('/micro/course', [CourseClassController::class, 'getAllClass']);
+Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
+Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
