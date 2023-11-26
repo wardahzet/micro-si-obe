@@ -75,7 +75,7 @@ class CourseClassController extends Controller
                 'thumbnail_img' => 'nullable|string',
                 'class_code' => 'string|max:255',
                 'syllabus_id' => 'integer',
-                'settings' => 'nullable|array', 
+                'settings' => 'nullable|array',
                 'creator_user_id' => 'integer'
             ]);
 
@@ -99,7 +99,6 @@ class CourseClassController extends Controller
                     'class' => $courseClass,
                 ],
             ], 200);
-            
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -108,22 +107,29 @@ class CourseClassController extends Controller
         }
     }
 
-    public function getClassesbyCourseName($courseName)
+    public function getClassesByCourseName($name)
     {
-        //
         try {
+            // Ganti %2B dengan karakter +
+            $name = str_replace('%2B', '+', $name);
+            $courseName = urldecode($name);
+
             $courses = CourseClass::where('name', 'LIKE', "%$courseName%")->get();
+
             if ($courses->isEmpty()) {
-                return response()->json(['error' => 'Course tidak ditemukan'], 404);
+                return response()->json(['error' => 'Course Classes tidak ditemukan'], 404);
             }
+
             $responseData = [
                 'course_classes' => $courses->toArray()
             ];
+
             return response()->json($responseData, 200);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
     public function getClassesbyCourseId($courseId)
     {
         //
