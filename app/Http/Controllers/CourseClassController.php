@@ -31,6 +31,11 @@ class CourseClassController extends Controller
         }
     }
 
+    public function getClassesbyCourseId($courseId)
+    {
+        //
+    }
+
     public function create(Request $request)
     {
        
@@ -65,6 +70,6 @@ class CourseClassController extends Controller
             'data'=>[
                 'classes' => $CourseClass,
             ]
-        ]);
+            ],200);
     }
 }

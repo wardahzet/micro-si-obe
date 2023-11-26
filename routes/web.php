@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CourseClassController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\JoinClassController;
 
@@ -13,6 +14,9 @@ use App\Http\Controllers\JoinClassController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+Route::get('/courses/search-name/{courseName}', [CourseClassController::class, 'getClassesByCourseName'])->name('courses.search');
+Route::get('/courses/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
 
 Route::get('/', function () {
     return view('welcome');
