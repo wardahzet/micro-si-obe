@@ -29,4 +29,6 @@ Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
 Route::get('/classes/search-name/{courseName}', [CourseClassController::class, 'getClassesByCourseName'])->name('courses.search');
 Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
+Route::put('/classes/{id}', [CourseClassController::class, 'editCourseClass']);
+
 
