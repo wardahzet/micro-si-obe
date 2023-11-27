@@ -56,7 +56,7 @@ class CourseClassController extends Controller
 
     public function getAllClass()
     {
-        // $CourseClass = CourseClass::all();
+        $CourseClass = CourseClass::all();
 
         // return response()->json([
         //     'status' => 'Success',
