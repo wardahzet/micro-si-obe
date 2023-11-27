@@ -20,10 +20,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/micro/classes', [CourseClassController::class, 'create']);
-Route::get('/micro/course', [CourseClassController::class, 'getAllClass']);
+Route::post('/classes', [CourseClassController::class, 'create']);
+// Route::get('/course', [CourseClassController::class, 'getAllClass']);
 Route::post('/joinClass', [JoinClassController::class,'store']);
 Route::get('/joinClass', [JoinClassController::class,'index']);
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
+
 Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
+Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
+Route::put('/classes/{id}', [CourseClassController::class, 'editCourseClass']);
+Route::get('/classes/search-name/{name}', [CourseClassController::class, 'getClassesBySearchName']);
+
+
+
