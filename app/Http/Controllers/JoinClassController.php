@@ -58,7 +58,7 @@ class JoinClassController extends Controller
             $studentUserId = $student['student_user_id'];
 
             try {
-                $response = $client->request('GET', "http://127.0.0.1:1000/api/users/{$studentUserId}");
+                $response = $client->request('GET', "http://127.0.0.1:6000/api/users/{$studentUserId}");
                 $userData[] = json_decode($response->getBody(), true);
             } catch (\Exception $e) {
                 $userData[] = ['error' => 'Failed to fetch user'];
@@ -81,10 +81,10 @@ class JoinClassController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'course_class_id' => 'required|exists:course_classes,course_id',
+            'course_class_id' => 'required|exists:course_classes,id',
             'student_user_id' => 'required',
         ]);
-        $courseExists = CourseClass::where('course_id', $request->course_class_id)->exists();
+        $courseExists = CourseClass::where('id', $request->course_class_id)->exists();
         if (!$courseExists) {
             return response()->json([
                 'success' => false,
@@ -93,7 +93,7 @@ class JoinClassController extends Controller
         }
         $client = new Client();
         try {
-            $response = $client->request('GET', "http://127.0.0.1:1000/api/users/{$request->student_user_id}");
+            $response = $client->request('GET', "http://127.0.0.1:6000/api/users/{$request->student_user_id}");
             $userData = json_decode($response->getBody(), true);
             if ($userData['role'] !== 'student') {
                 return response()->json([
