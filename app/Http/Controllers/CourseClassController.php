@@ -7,6 +7,7 @@ use App\Models\CourseClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
 
 class CourseClassController extends Controller
 {
@@ -33,8 +34,6 @@ class CourseClassController extends Controller
 
     public function create(Request $request)
     {
-       
-            
             $CourseClass = CourseClass::create([
                 'course_id'=> $request->course_id,
                 'name'=> $request->name,
@@ -57,14 +56,41 @@ class CourseClassController extends Controller
 
     public function getAllClass()
     {
-        $CourseClass = CourseClass::all();
+        // $CourseClass = CourseClass::all();
 
+        // return response()->json([
+        //     'status' => 'Success',
+        //     'message' => 'All class grabbed',
+        //     'data'=>[
+        //         'classes' => $CourseClass,
+        //     ]
+        // ]);
+
+        $classes = CourseClass::all();
+
+        $result = [];
+        foreach ($classes as $class){
+            $syllabus = Http::get('http://localhost:5000/syllabi/' . $class->syllabus_id)->json();
+            $course = Http::get('http://localhost:5000/courses/'. $class->course_id)->json() ;
+
+            $result[] = [
+                'name' => $class->name,
+                'thumbnail_img' => $class->thumbnail_img,
+                'class_code' => $class->class_code,
+                'creator_user_id'=> $class->creator_user_id,
+                'settings'=> $class->settings,
+                'course' => $course,
+                'syllabus' => $syllabus,
+            ];   
+        
+        } 
+        //return response()->json($result);
         return response()->json([
             'status' => 'Success',
             'message' => 'All class grabbed',
-            'data'=>[
-                'classes' => $CourseClass,
-            ]
-        ]);
+            'Data'=> $result
+            ], 200);
     }
+
+
 }
