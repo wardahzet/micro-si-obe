@@ -20,15 +20,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-Route::get('/classes', [CourseClassController::class, 'getAllClass']); //v
-Route::post('/classes', [CourseClassController::class, 'create']);//v
-Route::delete('/class/{classCode}', [CourseClassController::class, 'deleteClass']);//v
-Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId'); //v
-Route::put('/classes/{id}', [CourseClassController::class, 'editCourseClass']);//V
-Route::get('/classes/search-name/{name}', [CourseClassController::class, 'getClassesBySearchName']); //v
+Route::get('/classes', [CourseClassController::class, 'showCreateForm'])->name('class.create.form');
+Route::post('/classes', [CourseClassController::class, 'create'])->name('class.create');
+Route::get('/getAll', [CourseClassController::class, 'getAllClass'])->name('getAllClass');
+Route::delete('/class/{classCode}', [CourseClassController::class, 'deleteClass']);
+Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
+Route::put('/classes/{id}', [CourseClassController::class, 'editCourseClass']);
+Route::get('/classes/search-name/{name}', [CourseClassController::class, 'getClassesBySearchName']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
-Route::post('/joinClass', [JoinClassController::class,'store']);//v
-Route::get('/joinClass', [JoinClassController::class,'index']);//v
-Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']); //v
-
+Route::post('/joinClass', [JoinClassController::class,'store']);
+Route::get('/joinClass', [JoinClassController::class,'index']);
+Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
