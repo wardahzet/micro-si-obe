@@ -23,15 +23,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('/classes', [CourseClassController::class, 'showCreateForm'])->name('class.create.form');
 Route::post('/classes', [CourseClassController::class, 'create'])->name('class.create');
 Route::get('/getAll', [CourseClassController::class, 'getAllClass'])->name('getAllClass');
-Route::post('/joinClass', [JoinClassController::class,'store']);
-Route::get('/joinClass', [JoinClassController::class,'index']);
-Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
-
-Route::delete('/class/{id}', [CourseClassController::class, 'deleteClass']);
-Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
+Route::delete('/class/{classCode}', [CourseClassController::class, 'deleteClass']);
 Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
 Route::put('/classes/{id}', [CourseClassController::class, 'editCourseClass']);
 Route::get('/classes/search-name/{name}', [CourseClassController::class, 'getClassesBySearchName']);
-
-
-
+Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
+Route::post('/joinClass', [JoinClassController::class,'store']);
+Route::get('/joinClass', [JoinClassController::class,'index']);
+Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
