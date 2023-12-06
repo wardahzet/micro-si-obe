@@ -20,8 +20,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('/classes', [CourseClassController::class, 'create']);
-// Route::get('/course', [CourseClassController::class, 'getAllClass']);
+Route::get('/classes', [CourseClassController::class, 'showCreateForm'])->name('class.create.form');
+Route::post('/classes', [CourseClassController::class, 'create'])->name('class.create');
+Route::get('/getAll', [CourseClassController::class, 'getAllClass'])->name('getAllClass');
 Route::post('/joinClass', [JoinClassController::class,'store']);
 Route::get('/joinClass', [JoinClassController::class,'index']);
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
