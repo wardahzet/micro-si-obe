@@ -26,4 +26,11 @@ class CourseClass extends Model
     {
         return $this->belongsTo(JoinClass::class, 'course_class_id');
     }
+
+    public static function search($query)
+    {
+        return self::where('name', 'like', '%' . $query . '%')
+            ->orWhere('id', $query)
+            ->get();
+    }
 }

@@ -24,10 +24,10 @@ Route::get('/classes', [CourseClassController::class, 'showCreateForm'])->name('
 Route::post('/classes', [CourseClassController::class, 'create'])->name('class.create');
 Route::get('/getAll', [CourseClassController::class, 'getAllClass'])->name('getAllClass');
 Route::delete('/class/{classCode}', [CourseClassController::class, 'deleteClass']);
-Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
 Route::put('/classes/{id}', [CourseClassController::class, 'editCourseClass']);
-Route::get('/classes/search-name/{name}', [CourseClassController::class, 'getClassesBySearchName']);
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
 Route::post('/joinClass', [JoinClassController::class,'store']);
 Route::get('/joinClass', [JoinClassController::class,'index']);
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
+Route::get('/course-classes/search', [CourseClassController::class, 'search'])->name('course_classes.search');
+
