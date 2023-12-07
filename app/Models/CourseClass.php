@@ -33,4 +33,10 @@ class CourseClass extends Model
             ->orWhere('id', $query)
             ->get();
     }
+
+    public function edit()
+    {
+        return self::find($this->id);
+    }
+
 }
