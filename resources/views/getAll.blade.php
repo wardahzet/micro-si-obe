@@ -31,16 +31,24 @@
     </div>
     <div class="container pb-8">
             <div class="flex flex-row sm:justify-between mb-3 p-4 sm:px-0 -mr-2 sm:-mr-3">
-                <form action="" method="get" class="w-1/3">
-                        <div class="form-control">
-                            <div class="flex items-center">
-                                <input type="text" name="search" placeholder="Search…" class="mt-1 p-3 border rounded-md w-full max-w-xs" value=""/>
-                                <button type="submit" class="btn h-12 w-12 btn-square rounded-r-md bg-gray-800 hover:bg-black flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white " fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                                </button>
-                            </div>
+                <form action="{{ route('course_classes.search') }}" method="GET" class="w-1/3">
+                    <div class="form-control">
+                        <div class="flex items-center">
+                            <input type="text" name="query" placeholder="Search…"
+                                class="mt-1 p-3 border rounded-md w-full max-w-xs" value="" />
+                            <button type="submit"
+                                class="btn h-12 w-12 btn-square rounded-r-md bg-gray-800 hover:bg-black flex items-center justify-center"
+                                >
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white " fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
                         </div>
+                    </div>
                 </form>
+    
 
                 <div class="order-5 sm:order-6 mr-2 sm:mr-3">
             

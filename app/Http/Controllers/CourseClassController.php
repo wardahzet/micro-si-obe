@@ -146,44 +146,17 @@ class CourseClassController extends Controller
         }
     }
 
-    public function getClassesBySearchName($name)
+    public function search(Request $request)
     {
-        try {
-            // Ganti %2B dengan karakter +
-            $name = str_replace('%2B', '+', $name);
-            $courseName = urldecode($name);
+        $query = $request->input('query');
 
-            $courses = CourseClass::where('name', 'LIKE', "%$courseName%")->get();
-
-            if ($courses->isEmpty()) {
-                return response()->json(['error' => 'Course Classes tidak ditemukan'], 404);
-            }
-
-            $responseData = [
-                'course_classes' => $courses->toArray()
-            ];
-
-            return response()->json($responseData, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
+        if (!$query) {
+            return redirect()->route('getAllClass')->with('error', 'Please enter a search term.');
         }
-    }
 
-    public function getClassesbyCourseId($courseId)
-    {
-        try {
-            $courses = CourseClass::where('id', $courseId)->get();
-            if ($courses->isEmpty()) {
-                return response()->json(['error' => 'Course tidak ditemukan'], 404);
-            }
-            $responseData = [
-                'course_classes' => $courses->toArray()
-            ];
-            return response()->json($responseData, 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
-    }
+        $results = CourseClass::search($query);
 
+        return view('course_classes.search', compact('results', 'query'));
+    }
 
 }
