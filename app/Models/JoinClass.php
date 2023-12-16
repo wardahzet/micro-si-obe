@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class JoinClass extends Model
 {
@@ -19,7 +20,7 @@ class JoinClass extends Model
         return $this->belongsTo(CourseClass::class, 'course_class_id');
     }
 
-    public function student()
+    public function students()
     {
         return $this->belongsTo(User::class, 'student_user_id');
     }

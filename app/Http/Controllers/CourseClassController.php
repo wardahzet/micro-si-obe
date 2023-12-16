@@ -2,18 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use GuzzleHttp\Client;
 use App\Models\JoinClass;
 use App\Models\CourseClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Http;
-
-use function PHPUnit\Framework\isEmpty;
 
 class CourseClassController extends Controller
 {
-    //fungsi delete class
     public function deleteClass($classCode)
     {
         try {
@@ -23,9 +20,8 @@ class CourseClassController extends Controller
                     JoinClass::destroy(collect($courseClass->join_class)->pluck('id'));
                 $courseClass->delete();
             });
-            return response()->json([
-                'status' => 'success',
-            ]);
+            
+            return redirect()->route('getAllClass');
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -45,37 +41,20 @@ class CourseClassController extends Controller
 
     public function create(Request $request)
     {
-        $CourseClass = CourseClass::create([
+        CourseClass::create([
             'course_id' => $request->course_id,
             'name' => $request->name,
-            // 'thumbnail_img'=> $request->thumbnail_img,
             'class_code' => $request->class_code,
             'creator_user_id' => $request->creator_user_id,
             'syllabus_id' => $request->syllabus_id,
-            // 'settings'=> $request->settings,
         ]);
 
-        return response()->json([
-            'status' => 'Success',
-            'message' => 'new class created',
-            'data' => [
-                'class' => $CourseClass,
-            ]
-        ], 200);
+        return redirect()->route('getAllClass');
     }
 
     public function getAllClass()
     {
         $CourseClass = CourseClass::all();
-
-        // return response()->json([
-        //     'status' => 'Success',
-        //     'message' => 'All class grabbed',
-        //     'data'=>[
-        //         'classes' => $CourseClass,
-        //     ]
-        // ]);
-
         $classes = CourseClass::all();
 
         $result = [];
@@ -94,21 +73,26 @@ class CourseClassController extends Controller
                 'syllabus' => $syllabus,
             ];
         }
-        //return response()->json($result);
-        // return response()->json([
-        //     'status' => 'Success',
-        //     'message' => 'All class grabbed',
-        //     'data' => [
-        //         'classes' => $CourseClass,
-        //     ]
-        // ], 200);
         return view('getAll', compact('result'));
     }
 
     public function edit($id)
     {
-        $courseClass = CourseClass::findOrFail($id);
-        return view('edit', compact('courseClass'));
+        try {
+            $courseClass = CourseClass::with('joinClass')->where('id',$id)->firstOrFail();
+            if ($courseClass->joinClass != null) {
+                $client = new Client();
+                $courseClass->joinClass->each(function ($e) use ($client) {
+                    $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$e->student_user_id}");
+                    $e->data = json_decode($response->getBody());
+                });
+            }
+            return view('edit', compact('courseClass'));
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function update(Request $request, $id)

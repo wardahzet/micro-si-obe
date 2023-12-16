@@ -24,7 +24,7 @@ class CourseClass extends Model
 
     public function joinClass()
     {
-        return $this->belongsTo(JoinClass::class, 'course_class_id');
+        return $this->hasMany(JoinClass::class, 'course_class_id');
     }
 
     public static function search($query)
