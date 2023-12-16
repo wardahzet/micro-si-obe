@@ -74,7 +74,7 @@ class JoinClassController extends Controller
             ],
         ];
 
-        return response()->json($result);
+        return $result;
     }
 
 
@@ -84,51 +84,22 @@ class JoinClassController extends Controller
             'course_class_id' => 'required|exists:course_classes,id',
             'student_user_id' => 'required',
         ]);
-        $courseExists = CourseClass::where('id', $request->course_class_id)->exists();
-        if (!$courseExists) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid course ID provided',
-            ], 422);
-        }
-        $client = new Client();
-        try {
-            $response = $client->request('GET', "http://127.0.0.1:6000/api/users/{$request->student_user_id}");
-            $userData = json_decode($response->getBody(), true);
-            if ($userData['role'] !== 'student') {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User role other than student is not allowed to join class',
-                ], 422);
-            }
-            $joinClass = JoinClass::create([
+
+        $data = JoinClass::where('course_class_id', $request->course_class_id)->where('student_user_id',$request->student_user_id)->get();
+        if(count($data) == 0) 
+            JoinClass::create([
                 'course_class_id' => $request->course_class_id,
                 'student_user_id' => $request->student_user_id,
             ]);
-    
-            return response()->json([
-                'success' => true,
-                'message' => 'Data berhasil diinputkan',
-                'data' => [
-                    'joinClass' => $joinClass,
-                ],
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to fetch user data from external API',
-            ], 500);
-        }
+
+        return redirect()->back();
     }
 
     public function deleteMemberClass($idClass, $idMember)
     {
         try {
             JoinClass::where('course_class_id', $idClass)->where('student_user_id', $idMember)->delete();
-
-            return response()->json([
-                'status' => 'success',
-            ]);
+            return redirect()->back();
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

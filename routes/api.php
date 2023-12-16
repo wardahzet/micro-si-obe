@@ -19,16 +19,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
 Route::get('/classes', [CourseClassController::class, 'showCreateForm'])->name('class.create.form');
 Route::post('/classes', [CourseClassController::class, 'create'])->name('class.create');
-Route::get('/getAll', [CourseClassController::class, 'getAllClass'])->name('getAllClass');
-Route::delete('/class/{classCode}', [CourseClassController::class, 'deleteClass']);
-Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass']);
-Route::post('/joinClass', [JoinClassController::class,'store']);
+Route::delete('/class/{classCode}', [CourseClassController::class, 'deleteClass'])->name('deleteclass');
+Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteMemberClass'])->name('deleteStudent');
+Route::post('/joinClass', [JoinClassController::class,'store'])->name('addStudent');
 Route::get('/joinClass', [JoinClassController::class,'index']);
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']);
-Route::get('/course-classes/search', [CourseClassController::class, 'search'])->name('course_classes.search');
-Route::get('/course-classes/{id}/edit', [CourseClassController::class, 'edit'])->name('course_classes.edit');
-Route::post('/course-classes/{id}', [CourseClassController::class, 'update'])->name('course_classes.update');
-
+Route::put('/classes/{id}', [CourseClassController::class, 'update'])->name('course_classes.update');
+Route::get('/classes/search-id/{courseId}', [CourseClassController::class, 'getClassesByCourseId'])->name('courses.searchByCourseId');
+Route::get('/classes/search-name/{name}', [CourseClassController::class, 'getClassesBySearchName']);
+Route::get('/getAll', [CourseClassController::class, 'getAllClass'])->name('getAllClass');
+Route::get('/classes/search', [CourseClassController::class, 'search'])->name('course_classes.search');
+Route::get('/classes/{id}/edit', [CourseClassController::class, 'edit'])->name('course_classes.edit');
