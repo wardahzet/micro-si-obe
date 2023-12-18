@@ -58,7 +58,7 @@ class JoinClassController extends Controller
             $studentUserId = $student['student_user_id'];
 
             try {
-                $response = $client->request('GET', "http://127.0.0.1:6000/api/users/{$studentUserId}");
+                $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$studentUserId}");
                 $userData[] = json_decode($response->getBody(), true);
             } catch (\Exception $e) {
                 $userData[] = ['error' => 'Failed to fetch user'];
@@ -74,7 +74,7 @@ class JoinClassController extends Controller
             ],
         ];
 
-        return $result;
+        return response()->json($result);
     }
 
 
@@ -85,21 +85,54 @@ class JoinClassController extends Controller
             'student_user_id' => 'required',
         ]);
 
-        $data = JoinClass::where('course_class_id', $request->course_class_id)->where('student_user_id',$request->student_user_id)->get();
-        if(count($data) == 0) 
-            JoinClass::create([
+        $courseExists = CourseClass::where('id', $request->course_class_id)->exists();
+        if (!$courseExists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid course ID provided',
+            ], 422);
+        }
+        $client = new Client();
+        try {
+            $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$request->student_user_id}");
+            $userData = json_decode($response->getBody(), true);
+            if ($userData['role'] !== 'student') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User role other than student is not allowed to join class',
+                ], 422);
+            }
+            $joinClass = JoinClass::create([
                 'course_class_id' => $request->course_class_id,
                 'student_user_id' => $request->student_user_id,
             ]);
-
-        return redirect()->back();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diinputkan',
+                'data' => [
+                    'joinClass' => $joinClass,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to fetch user data from external API',
+            ], 500);
+        }
     }
 
     public function deleteMemberClass($idClass, $idMember)
     {
         try {
-            JoinClass::where('course_class_id', $idClass)->where('student_user_id', $idMember)->delete();
-            return redirect()->back();
+            JoinClass::where([
+                'course_class_id' => $idClass,
+                'student_user_id' => $idMember
+            ])->delete();
+
+            return response()->json([
+                'status' => 'success',
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

@@ -8,6 +8,7 @@ use App\Models\CourseClass;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Validator;
 
 class CourseClassController extends Controller
 {
@@ -15,13 +16,15 @@ class CourseClassController extends Controller
     {
         try {
             DB::transaction(function () use ($classCode) {
-                $courseClass = CourseClass::where('class_code', $classCode)->with('joinclass')->firstOrFail();
+                $courseClass = CourseClass::where('id', $classCode)->with('joinclass')->firstOrFail();
                 if ($courseClass->joinClass != null)
                     JoinClass::destroy(collect($courseClass->join_class)->pluck('id'));
                 $courseClass->delete();
             });
             
-            return redirect()->route('getAllClass');
+            return response()->json([
+                'status' => 'success',
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -41,20 +44,43 @@ class CourseClassController extends Controller
 
     public function create(Request $request)
     {
-        CourseClass::create([
-            'course_id' => $request->course_id,
-            'name' => $request->name,
-            'class_code' => $request->class_code,
-            'creator_user_id' => $request->creator_user_id,
-            'syllabus_id' => $request->syllabus_id,
-        ]);
+        try{
+            $syllabi = Http::get('http://localhost:5000/syllabi/' . $request->syllabus_id)->json();
+            $course = Http::get('http://localhost:5000/courses/'.$request->course_code)->json();
+            if (CourseClass::where('class_code', $request->class_code)->first() != null) 
+                throw new \Exception ('class_code sudah ada');
+            if ($course['data'] != null && $syllabi['data'] != null) {
+                $CourseClass = CourseClass::create([
+                    'course_id' => $course['data']['id'],
+                    'name' => $request->name,
+                    // 'thumbnail_img'=> $request->thumbnail_img,
+                    'class_code' => $request->class_code,
+                    'creator_user_id' => $request->creator_user_id,
+                    'syllabus_id' => $request->syllabus_id,
+                    // 'settings'=> $request->settings,
+                ]);
+        
+                return response()->json([
+                    'status' => 'Success',
+                    'message' => 'new class created',
+                    'data' => [
+                        'class' => $CourseClass,
+                    ]
+                ], 200);
+            }
+            else throw new \Exception ("kelas\/syllabi tidak ditemukan");
+        } catch(\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTrace(),
+            ], 500);
+        }
 
-        return redirect()->route('getAllClass');
     }
 
     public function getAllClass()
     {
-        $CourseClass = CourseClass::all();
         $classes = CourseClass::all();
 
         $result = [];
@@ -73,24 +99,57 @@ class CourseClassController extends Controller
                 'syllabus' => $syllabus,
             ];
         }
-        return view('getAll', compact('result'));
+        if (count($classes) ==0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'kelas tidak ditemukan',
+            ], 404);
+        }
+        return response()->json([
+            'status' => 'Success',
+            'message' => 'All class grabbed',
+            'data' => [
+                'classes' => $classes,
+            ]
+        ], 200);
     }
 
-    public function edit($id)
+    public function editCourseClass(Request $request, $id)
     {
         try {
-            $courseClass = CourseClass::with('joinClass')->where('id',$id)->firstOrFail();
-            if ($courseClass->joinClass != null) {
-                $client = new Client();
-                $courseClass->joinClass->each(function ($e) use ($client) {
-                    $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$e->student_user_id}");
-                    $e->data = json_decode($response->getBody());
-                });
+            $courseClass = CourseClass::findOrFail($id);
+            $validator = Validator::make($request->all(), [
+                'name' => 'string|max:255',
+                'thumbnail_img' => 'nullable|string',
+                'class_code' => 'string|max:255',
+                'syllabus_id' => 'integer',
+                'settings' => 'nullable|array',
+                'creator_user_id' => 'integer'
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
             }
-            return view('edit', compact('courseClass'));
+
+            $courseClass->update($request->only([
+                'name',
+                'thumbnail_img',
+                'class_code',
+                'syllabus_id',
+                'settings',
+                'creator_user_id'
+            ]));
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Course Class berhasil diupdate',
+                'data' => [
+                    'class' => $courseClass,
+                ],
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => $e->getMessage(),
+                'status' => 'error',
+                'error' => $e->getMessage(),
             ]);
         }
     }
@@ -104,19 +163,45 @@ class CourseClassController extends Controller
             'settings' => 'nullable|string|max:255',
         ]);
         $courseClass->update($request->all());
+        dd('a');
         return redirect()->route('getAllClass')->with('success', 'Course class updated successfully');
     }
 
-    public function search(Request $request)
+    public function getClassesBySearchName($name)
     {
-        $query = $request->input('query');
+        try {
+            // Ganti %2B dengan karakter +
+            $name = str_replace('%2B', '+', $name);
+            $courseName = urldecode($name);
 
-        if (!$query) {
-            return redirect()->route('getAllClass')->with('error', 'Please enter a search term.');
+            $courses = CourseClass::where('name', 'LIKE', "%$courseName%")->get();
+
+            if ($courses->isEmpty()) {
+                return response()->json(['error' => 'Course Classes tidak ditemukan'], 404);
+            }
+            $responseData = [
+                'course_classes' => $courses->toArray()
+            ];
+
+            return response()->json($responseData, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
 
-        $results = CourseClass::search($query);
-
-        return view('search', compact('results', 'query'));
+    public function getClassesbyCourseId($courseId)
+    {
+        try {
+            $courses = CourseClass::where('id', $courseId)->get();
+            if ($courses->isEmpty()) {
+                return response()->json(['error' => 'Course tidak ditemukan'], 404);
+            }
+            $responseData = [
+                'course_classes' => $courses->toArray()
+            ];
+            return response()->json($responseData, 200);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
