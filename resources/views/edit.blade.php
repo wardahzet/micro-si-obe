@@ -9,11 +9,14 @@
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @section('pageTitle', 'Edit')
 
-<header class="bg-white shadow">
-    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Edit Course Classes
-        </h2>
+<header class="bg-white shadow items-center">
+    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 flex justify-between">
+        <div class="items-center flex"
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Edit Course Classes
+            </h2>
+        </div>
+        <button id="deleteButton" class="bg-red-800 w-[150px] py-2 text-white font-bold rounded-lg">Delete</button>  
     </div>
 </header>
 
@@ -46,8 +49,7 @@
 
                         <button class="bg-gray-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
                             type="submit">Update</button>
-                        <button id="deleteButton" class="bg-red-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
-                        >Delete</button>                         
+                                               
                     </form>
                 </div>
             </div>
@@ -117,30 +119,7 @@
         @endif
     </div>
 </div>
-{{-- <form id="updateForm" action="{{ route('course_classes.update', $courseClass->id) }}" method="POST">
-    @csrf
-    @method('PUT')
-    <div class="grid grid-cols-1">
-        <label for="name" class="font-semibold">Name :</label>
-        <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-            name="name" value="{{ $courseClass->name }}">
-    </div>
-    <div class="grid grid-cols-1 mt-5">
-        <label for="class_code" class="font-semibold">Class Code :</label>
-        <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-            name="class_code" value="{{ $courseClass->class_code }}">
-    </div>
-    <div class="grid grid-cols-1 mt-5">
-        <label for="settings" class="font-semibold">Settings :</label>
-        <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-            name="settings" value="{{ $courseClass->settings }}">
-    </div>
 
-    <button class="bg-gray-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
-        type="submit">Update</button>
-    <button id="deleteButton" class="bg-red-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
-    >Delete</button>                         
-</form> --}}
 <form id="deleteForm" action="{{ route('deleteclass', $courseClass->class_code) }}" method="POST">
     @csrf
     @method('DELETE')            
@@ -184,16 +163,17 @@
                 
                 <div class="grid grid-cols-1">
                 <input type="hidden" name="course_class_id" value="{{$courseClass->id}}" />
+                <input type="hidden" name="student_user_id" value="${myText.id}" />
                 </div>
                 <div class="grid grid-cols-1 mt-8">
                     <label for="name" class="font-semibold">Name :</label>
                     <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-                        name="name" value="${myText.name}">
+                        name="name" value="${myText.name}" disabled>
                 </div>
                 <div class="grid grid-cols-1">
                     <label for="name" class="font-semibold">Student Id :</label>
                     <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-                        name="student_user_id" value="${myText.id}">
+                        name="id" value="${myText.id}" disabled>
                 </div>
                 <button class="bg-gray-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
                 type="submit">Add</button>
