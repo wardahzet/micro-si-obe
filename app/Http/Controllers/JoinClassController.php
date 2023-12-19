@@ -8,16 +8,78 @@ use App\Models\CourseClass;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use function PHPUnit\Framework\isNull;
+
 class JoinClassController extends Controller
 {
+    
+    public function storeUI(Request $request)
+    {
+        try {
+            $this->store($request);
+            return redirect()->back();
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function storeAPI(Request $request)
+    {        
+        try {
+            $joinClass = $this->store($request);  
+            return response()->json([
+                'success' => true,
+                'message' => 'Data berhasil diinputkan',
+                'data' => [
+                    'joinClass' => $joinClass,
+                ],
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    private function store(Request $request)
+    {
+        $request->validate([
+            'course_class_id' => 'required|exists:course_classes,id',
+            'student_user_id' => 'required',
+        ]);
+
+        $client = new Client();
+        $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$request->student_user_id}");
+        $userData = json_decode($response->getBody(), true);
+        if ($userData['role'] !== 'student') {
+            throw new \Exception('User role other than student is not allowed to join class');
+        }
+        $joinClass = JoinClass::create([
+            'course_class_id' => $request->course_class_id,
+            'student_user_id' => $request->student_user_id,
+        ]);
+
+        return $joinClass;        
+    }
+
     public function index()
     {
         $joinClass = JoinClass::all();
-
+        if (!$joinClass) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data not found'
+            ], 404);
+        }
         return response()->json([
             'success' => true,
             'data' => $joinClass
-        ]);
+        ],200);
     }
 
 
@@ -58,7 +120,7 @@ class JoinClassController extends Controller
             $studentUserId = $student['student_user_id'];
 
             try {
-                $response = $client->request('GET', "http://127.0.0.1:6000/api/users/{$studentUserId}");
+                $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$studentUserId}");
                 $userData[] = json_decode($response->getBody(), true);
             } catch (\Exception $e) {
                 $userData[] = ['error' => 'Failed to fetch user'];
@@ -77,28 +139,18 @@ class JoinClassController extends Controller
         return $result;
     }
 
-
-    public function store(Request $request)
+    private function delete($idClass, $idMember)
     {
-        $request->validate([
-            'course_class_id' => 'required|exists:course_classes,id',
-            'student_user_id' => 'required',
-        ]);
-
-        $data = JoinClass::where('course_class_id', $request->course_class_id)->where('student_user_id',$request->student_user_id)->get();
-        if(count($data) == 0) 
-            JoinClass::create([
-                'course_class_id' => $request->course_class_id,
-                'student_user_id' => $request->student_user_id,
-            ]);
-
-        return redirect()->back();
+        $joinClass = JoinClass::where('course_class_id', $idClass)
+            ->where('student_user_id', $idMember)
+            ->firstOrFail()->delete();
+        return $joinClass;
     }
 
-    public function deleteMemberClass($idClass, $idMember)
-    {
+    public function deleteUI($idClass, $idMember)
+    {        
         try {
-            JoinClass::where('course_class_id', $idClass)->where('student_user_id', $idMember)->delete();
+            $this->delete($idClass, $idMember);
             return redirect()->back();
         } catch (\Exception $e) {
             return response()->json([
@@ -107,6 +159,22 @@ class JoinClassController extends Controller
             ]);
         }
     }
+
+    public function deleteAPI($idClass, $idMember)
+    {
+        try {
+            $this->delete($idClass, $idMember);
+            return response()->json([
+                'status' => 'success',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
     public function getUsers()
     {
         try {

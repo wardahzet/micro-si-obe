@@ -109,7 +109,7 @@
                             {{$student->student_user_id}}
                         </td>
                         <td class="px-6 py-4">
-                            <a href="#" onclick="deleteStudent('{{ $student->id }}', '{{ $courseClass->id }}')" class="font-medium text-blue-600 light:text-blue-500 hover:underline">Delete</a>
+                            <a href="#" onclick="deleteStudent('{{ $student->student_user_id }}', '{{ $courseClass->id }}')" class="font-medium text-blue-600 light:text-blue-500 hover:underline">Delete</a>
                         </td>
                     </tr>             
                 @endforeach
@@ -144,7 +144,7 @@
     async function searchBtn(classId) {
         let id = document.getElementById('search').value;
         let mytext = null;
-        if (id != null) {
+        if (id > 0) {
             try {
                 let response = await fetch(`http://127.0.0.1:8080/api/users/${id}`);
                 
@@ -154,13 +154,15 @@
                 myText = await response.json();
                 console.log(myText);
             } catch (error) {
-                console.error('There was a problem with the fetch operation:', error);
+                document.getElementById('student-info').innerHTML = "<h3>Student Not Found</h3>";
             }
-        } else return;
-        if (myText != null) {
+        };
+        if (myText == null) {
+            document.getElementById('student-info').innerHTML = "<h3>Student Not Found</h3>";
+        }else {
             document.getElementById('student-info').innerHTML = `
             <form id="updateForm" action="{{ route('addStudent')}}" method="POST">
-                
+                @csrf
                 <div class="grid grid-cols-1">
                 <input type="hidden" name="course_class_id" value="{{$courseClass->id}}" />
                 <input type="hidden" name="student_user_id" value="${myText.id}" />
@@ -180,7 +182,7 @@
                       
             </form>
             `;
-        }else return;
+        };
     }
 
 </script>
