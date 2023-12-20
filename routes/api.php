@@ -32,4 +32,5 @@ Route::get('/joinClass', [JoinClassController::class,'index']);//v
 Route::get('/joinClass/{course_class_id}', [JoinClassController::class,'show']); //v
 Route::post('/joinClass', [JoinClassController::class,'storeAPI']);//v
 Route::delete('/class/{idClass}/student/{id}', [JoinClassController::class, 'deleteAPI']);
+Route::get('/users/{id}', [JoinClassController::class, 'getUser']);
 

@@ -59,6 +59,12 @@ class JoinClassController extends Controller
         if ($userData['role'] !== 'student') {
             throw new \Exception('User role other than student is not allowed to join class');
         }
+        $joinClass = JoinClass::where('course_class_id', $request->course_class_id)
+            ->where('student_user_id', $request->student_user_id)
+            ->first();
+        if ($joinClass) {
+            throw new \Exception ('user sudah terdaftar');
+        }
         $joinClass = JoinClass::create([
             'course_class_id' => $request->course_class_id,
             'student_user_id' => $request->student_user_id,
@@ -175,13 +181,12 @@ class JoinClassController extends Controller
         }
     }
 
-    public function getUsers()
+    public function getUser($id)
     {
         try {
             $client = new Client();
-            $response = $client->request('GET', 'http://127.0.0.1:1000/api/users');
-            $users = json_decode($response->getBody(), true);
-            return response()->json($users, $response->getStatusCode());
+            $response = $client->request('GET', "http://127.0.0.1:8080/api/users/{$id}");
+            return response()->json(['data' => json_decode($response->getBody(), true)]);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch users'], 500);
         }

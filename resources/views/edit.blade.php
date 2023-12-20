@@ -146,7 +146,7 @@
         let mytext = null;
         if (id > 0) {
             try {
-                let response = await fetch(`http://127.0.0.1:8080/api/users/${id}`);
+                let response = await fetch(`http://127.0.0.1:8000/api/users/${id}`);
                 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -161,26 +161,25 @@
             document.getElementById('student-info').innerHTML = "<h3>Student Not Found</h3>";
         }else {
             document.getElementById('student-info').innerHTML = `
-            <form id="updateForm" action="{{ route('addStudent')}}" method="POST">
-                @csrf
-                <div class="grid grid-cols-1">
-                <input type="hidden" name="course_class_id" value="{{$courseClass->id}}" />
-                <input type="hidden" name="student_user_id" value="${myText.id}" />
-                </div>
-                <div class="grid grid-cols-1 mt-8">
-                    <label for="name" class="font-semibold">Name :</label>
-                    <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-                        name="name" value="${myText.name}" disabled>
-                </div>
-                <div class="grid grid-cols-1">
-                    <label for="name" class="font-semibold">Student Id :</label>
-                    <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
-                        name="id" value="${myText.id}" disabled>
-                </div>
-                <button class="bg-gray-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
-                type="submit">Add</button>
-                      
-            </form>
+                <form id="updateForm" action="{{ route('addStudent')}}" method="POST">
+                    @csrf
+                    <div class="grid grid-cols-1">
+                    <input type="hidden" name="course_class_id" value="{{$courseClass->id}}" />
+                    <input type="hidden" name="student_user_id" value="${myText.data.id}" />
+                    </div>
+                    <div class="grid grid-cols-1 mt-8">
+                        <label for="name" class="font-semibold">Name :</label>
+                        <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
+                            name="name" value="${myText.data.name}" disabled>
+                    </div>
+                    <div class="grid grid-cols-1">
+                        <label for="name" class="font-semibold">Student Id :</label>
+                        <input class="mt-2 border border-gray-500 w-[400px] py-2 px-4 rounded-lg" type="text"
+                            name="id" value="${myText.data.id}" disabled>
+                    </div>
+                    <button class="bg-gray-800 w-[150px] mt-8 py-2 text-white font-bold rounded-lg"
+                    type="submit">Add</button>                      
+                </form>
             `;
         };
     }
